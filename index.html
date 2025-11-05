@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KM Bank Dashboard</title> 
+<link rel="shortcut icon" href="img/logo.png" type="image/x-icon">
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col items-center p-4">
+
+<h1 class="text-3xl font-bold text-center text-blue-700 mb-6">🏦 KM Bank Accounts</h1>
+
+<div class="grid gap-6 sm:grid-cols-1 md:grid-cols-2 w-full max-w-6xl">
+
+  <!-- Checking Account -->
+  <div class="bg-white rounded-2xl shadow-lg p-6 flex flex-col justify-between">
+    <h2 class="text-xl font-semibold text-gray-800 mb-2">💵 Checking</h2>
+    <p class="text-gray-600 mb-1">Balance:</p>
+    <p id="checking-balance" class="text-3xl font-bold text-green-600 mb-4">$5,000.00</p>
+
+    <div class="flex flex-wrap gap-2 mb-4">
+      <button onclick="deposit('checking')" class="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700">Deposit</button>
+      <button onclick="withdraw('checking')" class="flex-1 bg-red-600 text-white py-2 rounded-lg hover:bg-red-700">Withdraw</button>
+      <button onclick="transfer('checking')" class="flex-1 bg-yellow-600 text-white py-2 rounded-lg hover:bg-yellow-700">Transfer</button>
+    </div>
+
+    <h3 class="font-semibold text-gray-700">Transactions</h3>
+    <ul id="checking-transactions" class="mt-2 text-gray-600 space-y-1 max-h-40 overflow-y-auto border-t pt-2"></ul>
+  </div>
+
+  <!-- Savings Account -->
+  <div class="bg-white rounded-2xl shadow-lg p-6 flex flex-col justify-between">
+    <h2 class="text-xl font-semibold text-gray-800 mb-2">💰 Savings</h2>
+    <p class="text-gray-600 mb-1">Balance:</p>
+    <p id="savings-balance" class="text-3xl font-bold text-green-600 mb-4">$12,000.00</p>
+
+    <div class="flex flex-wrap gap-2 mb-4">
+      <button onclick="deposit('savings')" class="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700">Deposit</button>
+      <button onclick="withdraw('savings')" class="flex-1 bg-red-600 text-white py-2 rounded-lg hover:bg-red-700">Withdraw</button>
+      <button onclick="transfer('savings')" class="flex-1 bg-yellow-600 text-white py-2 rounded-lg hover:bg-yellow-700">Transfer</button>
+    </div>
+
+    <h3 class="font-semibold text-gray-700">Transactions</h3>
+    <ul id="savings-transactions" class="mt-2 text-gray-600 space-y-1 max-h-40 overflow-y-auto border-t pt-2"></ul>
+  </div>
+
+</div>
+<footer class="mt-6">
+  <p class="text-center text-gray-600">© 2023 KM Bank. All rights reserved.</p>
+</footer>
+
+<script>
+let accounts = {
+  checking: 5000,
+  savings: 12000
+};
+
+// Update displayed balance
+function updateBalance(account) {
+  document.getElementById(`${account}-balance`).textContent = `$${accounts[account].toLocaleString()}.00`;
+}
+
+// Add transaction to UI
+function addTransaction(account, type, amount) {
+  const ul = document.getElementById(`${account}-transactions`);
+  const li = document.createElement("li");
+  li.textContent = `${type}: $${amount.toLocaleString()}`;
+  li.className = type === 'Deposit' ? "text-green-600" : type === 'Withdraw' ? "text-red-600" : "text-yellow-600";
+  ul.prepend(li);
+}
+
+// Deposit
+function deposit(account) {
+  const amount = parseFloat(prompt(`Enter deposit amount for ${account}:`));
+  if(!amount || amount <= 0) return alert("Invalid amount");
+  accounts[account] += amount;
+  updateBalance(account);
+  addTransaction(account, "Deposit", amount);
+}
+
+// Withdraw
+function withdraw(account) {
+  const amount = parseFloat(prompt(`Enter withdrawal amount from ${account}:`));
+  if(!amount || amount <= 0) return alert("Invalid amount");
+  if(amount > accounts[account]) return alert("Insufficient balance");
+  accounts[account] -= amount;
+  updateBalance(account);
+  addTransaction(account, "Withdraw", amount);
+}
+
+// Transfer between accounts
+function transfer(from) {
+  const to = from === "checking" ? "savings" : "checking";
+  const amount = parseFloat(prompt(`Enter amount to transfer from ${from} to ${to}:`));
+  if(!amount || amount <= 0) return alert("Invalid amount");
+  if(amount > accounts[from]) return alert("Insufficient balance");
+  accounts[from] -= amount;
+  accounts[to] += amount;
+  updateBalance(from);
+  updateBalance(to);
+  addTransaction(from, "Transfer Out", amount);
+  addTransaction(to, "Transfer In", amount);
+}
+</script>
+
+</body>
+</html>
